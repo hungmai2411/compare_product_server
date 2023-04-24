@@ -1,0 +1,20 @@
+{
+  "name": "compare_product_server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "got": "^12.6.0",
+    "jsdom": "^21.1.1",
+    "node-schedule": "^2.1.1",
+    "nodemon": "^2.0.22"
+  }
+}
