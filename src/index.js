@@ -5,6 +5,8 @@ require("dotenv").config();
 
 const mongoose = require("mongoose");
 const createError = require("http-errors");
+const route = require("./routes");
+const db = require("./config/db");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -12,10 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 const PORT = process.env.PORT || 8000;
 
 // connect mongodb
-mongoose.connect(process.env.URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+db.connect();
 
 mongoose.connection.on("connected", function () {
   console.log(`Mongodb:: connected:::${this.name}`);
@@ -39,8 +38,8 @@ process.on("SIGINT", async () => {
   process.exit(0);
 });
 
-const productRoute = require("./routes/product.route");
-app.use("/v1/products", productRoute);
+// Route
+route(app);
 
 app.listen(PORT, () => {
   console.log(`SERVER RUNNING AT ${PORT}`);
