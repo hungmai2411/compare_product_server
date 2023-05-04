@@ -23,7 +23,7 @@ const ProductsController = {
   // [POST] /v1/product/create?link=....
   createProduct: async (req, res) => {
     try {
-      const baseUrl = "https://phongvu.vn/iphone-14-pro--p459616?sku=22090s8992";
+      const baseUrl = "https://phongvu.vn/iphone-14-pro--p459616?sku=220908992";
       const response = await axios.get(baseUrl);
       if (baseUrl.split("/")[2] === "phongvu.vn") {
         const $ = cheerio.load(response.data);
