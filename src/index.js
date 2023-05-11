@@ -52,7 +52,7 @@ route(app);
 // }
 
 try {
-  cron.schedule("*/2 * * * *", function () {
+  cron.schedule("*/4 * * * *", function () {
     productController.updateEveryDay();
   });
 } catch (error) {
