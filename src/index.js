@@ -7,6 +7,8 @@ const mongoose = require("mongoose");
 const createError = require("http-errors");
 const route = require("./routes");
 const db = require("./config/db");
+const cron = require("node-cron");
+const productController = require("../src/controllers/product.controller");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -41,7 +43,22 @@ process.on("SIGINT", async () => {
 // Route
 route(app);
 
+// try {
+//   cron.schedule("0 * * * *", function () {
+//     productController.updateEveryDay();
+//   });
+// } catch (error) {
+//   console.log(error);
+// }
+
+try {
+  cron.schedule("*/2 * * * *", function () {
+    productController.updateEveryDay();
+  });
+} catch (error) {
+  console.log(error);
+}
+
 app.listen(PORT, () => {
   console.log(`SERVER RUNNING AT ${PORT}`);
 });
-
