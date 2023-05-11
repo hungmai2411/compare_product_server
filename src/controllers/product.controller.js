@@ -4,7 +4,7 @@ const cheerio = require("cheerio");
 
 const ProductsController = {
   // [GET] /v1/products
-  getAllProducts: async (req, res, next) => {
+  getAllProducts: async (req, res) => {
     try {
       const allProduct = await Product.find();
       res.status(200).json(allProduct);
@@ -164,7 +164,7 @@ const ProductsController = {
       const i = 0;
       setInterval(() => {
         ProductsController.updateEveryDay();
-      }, 21.600);
+      }, 21600);
       res.status(200).json("Set time crawl successfully");
     } catch (err) {
       res.status(500).json(err.message);
