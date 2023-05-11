@@ -50,7 +50,8 @@ const ProductsController = {
           };
           prices.push(newPrice);
         } else {
-          price = info.find(".css-1co26wt > div").text().split("₫")[0].trim() + "₫";
+          price =
+            info.find(".css-1co26wt > div").text().split("₫")[0].trim() + "₫";
           const newPrice = {
             date,
             price,
@@ -74,7 +75,8 @@ const ProductsController = {
         const prices = [];
         const name = $(".top-product > h1").text().trim();
         const date = new Date();
-        const price = $(".product-center > p > strong").text().split("₫")[0].trim() + "₫";
+        const price =
+          $(".product-center > p > strong").text().split("₫")[0].trim() + "₫";
         const newPrice = {
           date,
           price,
@@ -122,7 +124,10 @@ const ProductsController = {
       } else if (baseUrl.split("/")[2] === "hoanghamobile.com") {
         const response = await axios.get(baseUrl);
         const $ = cheerio.load(response.data);
-        const price = $(".product-center > p > strong").text().split("₫")[0].trim();
+        const price = $(".product-center > p > strong")
+          .text()
+          .split("₫")[0]
+          .trim();
         const date = new Date();
         const newPrice = {
           date,
@@ -145,7 +150,7 @@ const ProductsController = {
     } catch (err) {
       res.status(500).json(err.message);
     }
-  }, 
+  },
   updateEveryDay: async () => {
     try {
       let updateProduct;
@@ -164,12 +169,12 @@ const ProductsController = {
       const i = 0;
       setInterval(() => {
         ProductsController.updateEveryDay();
-      }, 21600);
+      }, 5000);
       res.status(200).json("Set time crawl successfully");
     } catch (err) {
       res.status(500).json(err.message);
     }
-  }
+  },
 };
 
 module.exports = ProductsController;
