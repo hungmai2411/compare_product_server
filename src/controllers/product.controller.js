@@ -71,7 +71,28 @@ const ProductsController = {
         return savedProduct;
       } 
       if (baseUrl.split("/")[2] === "gearvn.com"){
-        console.log("a");
+        const response = await axios.get(baseUrl);
+        const $ = cheerio.load(response.data);
+        const prices = [];
+        const name = $(".product_name").text().trim();
+        const date = new Date();
+        const price = $(".product_sale_price").text().trim().split("₫")[0].replaceAll(",","");
+        const newPrice = {
+          date,
+          price: parseInt(price),
+        };
+        prices.push(newPrice);
+        const image = $(".fotorama > img").attr("src")
+        const link = baseUrl;
+        const productData = {
+          name,
+          prices,
+          image,
+          link,
+        };
+        const newProduct = new Product(productData);
+        const savedProduct = await newProduct.save();
+        return savedProduct;
       } else if (baseUrl.split("/")[2] === "hoanghamobile.com") {
         const response = await axios.get(baseUrl);
         const $ = cheerio.load(response.data);
@@ -133,6 +154,19 @@ const ProductsController = {
           await product.save();
           return product;
         }
+      }
+      if (baseUrl.split("/")[2] === "gearvn.com") {
+        const response = await axios.get(baseUrl);
+        const $ = cheerio.load(response.data);
+        const price = $(".product_sale_price").text().trim().split("₫")[0].replaceAll(",","");
+        const date = new Date();
+        const newPrice = {
+          date,
+          price: parseInt(price),
+        };
+        product.prices.push(newPrice);
+        await product.save();
+        return product;
       } else if (baseUrl.split("/")[2] === "hoanghamobile.com") {
         const response = await axios.get(baseUrl);
         const $ = cheerio.load(response.data);
@@ -191,7 +225,7 @@ const ProductsController = {
   },
   scheduleCrawl: async (req, res) => {
     try {
-      cron.schedule("*/5 * * * *", function () {
+      cron.schedule("*/1 * * * *", function () {
         ProductsController.updateEveryDay();
       });
     } catch (error) {
