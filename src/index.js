@@ -51,13 +51,13 @@ route(app);
 //   console.log(error);
 // }
 
-try {
-  cron.schedule("*/4 * * * *", function () {
-    productController.updateEveryDay();
-  });
-} catch (error) {
-  console.log(error);
-}
+// try {
+//   cron.schedule("*/4 * * * *", function () {
+//     productController.updateEveryDay();
+//   });
+// } catch (error) {
+//   console.log(error);
+// }
 
 app.listen(PORT, () => {
   console.log(`SERVER RUNNING AT ${PORT}`);
