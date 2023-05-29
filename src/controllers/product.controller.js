@@ -2,6 +2,7 @@ const { Product, Order } = require("../models/product.model");
 const axios = require("axios");
 const cheerio = require("cheerio");
 const cron = require("node-cron");
+const sendEmail = require('../utils/mailer')
 
 const ProductsController = {
   // [GET] /v1/products
@@ -207,11 +208,19 @@ const ProductsController = {
         if (updatePrice > min && updatePrice < max) {
           console.log(`${min} < price: ${updatePrice} < ${max}`);
           // mail and delete product
+          //console.log(order[i].product.image);
+          await sendEmail({
+            reciverEmail: order[i].gmail,
+            product_name: order[i].product.name,
+            product_price: updatePrice,
+            link_image: order[i].product.image,
+            product_link: order[i].link
+          });
         } else {
           console.log(`price: ${updatePrice} min:${min} max:${max}`);
         }
+        console.log(updateProduct);
       }
-      console.log(updateProduct);
       return updateProduct;
     } catch (err) {
       throw new Error(err.message);
@@ -235,7 +244,8 @@ const ProductsController = {
     } catch (error) {
       res.status(500).json(error.message)
     }
-  }
+  },
+  
 };
 
 module.exports = ProductsController;

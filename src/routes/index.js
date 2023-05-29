@@ -6,7 +6,7 @@ function route(app) {
   app.use("/v1/order", orderRoute);
 
   // Hàm cập nhật giá
-  productController.scheduleCrawl();
+  // productController.scheduleCrawl();
 }
 module.exports = route;
 
