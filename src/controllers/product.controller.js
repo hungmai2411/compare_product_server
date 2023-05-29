@@ -216,6 +216,9 @@ const ProductsController = {
             link_image: order[i].product.image,
             product_link: order[i].link
           });
+          // delete product
+          await Product.findByIdAndDelete(order[i].product);
+          await Order.findByIdAndDelete(order[i].id);
         } else {
           console.log(`price: ${updatePrice} min:${min} max:${max}`);
         }
