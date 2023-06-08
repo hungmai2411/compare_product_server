@@ -319,10 +319,18 @@ const ProductsController = {
             console.log(`${min} < price: ${updatePrice} < ${max}`);
             // mail and delete product
             //console.log(order[i].product.image);
+            const options = { 
+              style: 'currency',
+              currency: 'VND',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0
+            }
+            const formattedPrice = updatePrice.toLocaleString('vi-VN', options);
+
             await sendEmail({
               reciverEmail: order[i].gmail,
               product_name: order[i].product.name,
-              product_price: updatePrice,
+              product_price: formattedPrice,
               link_image: order[i].product.image,
               product_link: order[i].link,
             });
