@@ -80,19 +80,19 @@ const ProductsController = {
         const response = await axios.get(baseUrl);
         const $ = cheerio.load(response.data);
         const prices = [];
-        const name = $(".product_name").text().trim();
+        const name = $(".product-name").text().trim();
         const date = new Date();
-        const price = $(".product_sale_price")
+        const price = $(".pro-price")
           .text()
           .trim()
           .split("₫")[0]
-          .replaceAll(",", "");
+          .replaceAll(".", "");
         const newPrice = {
           date,
           price: parseInt(price),
         };
         prices.push(newPrice);
-        const image = $(".fotorama > img").attr("src");
+        const image =  `https:${$(".boxlazy-img--aspect > img").attr("src")}`;
         const link = baseUrl;
         const productData = {
           name,
@@ -219,11 +219,11 @@ const ProductsController = {
       if (baseUrl.split("/")[2] === "gearvn.com") {
         const response = await axios.get(baseUrl);
         const $ = cheerio.load(response.data);
-        const price = $(".product_sale_price")
+        const price = $(".pro-price")
           .text()
           .trim()
           .split("₫")[0]
-          .replaceAll(",", "");
+          .replaceAll(".", "");
         const date = new Date();
         newPrice = {
           date,
