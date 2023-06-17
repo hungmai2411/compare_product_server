@@ -29,8 +29,16 @@ const OrderController = {
       const baseUrl = link.split("/")[2];
       //console.log(baseUrl);
       if (baseUrl !== "phongvu.vn" && baseUrl !=="gearvn.com" && baseUrl !== "tiki.vn" && baseUrl !== "hoanghamobile.com") throw new Error('this link should be contain "phongvu.vn", "gearvn.com", "tiki.vn", "hoanghamobile.com"')
-      const createdProduct = await productController.createProduct(link);
-
+      const isExists = await Order.findOne({ link }).exec();
+      let createdProduct = "a";
+      if (isExists) {
+        // createdProduct = await productController.createProduct(link);
+        createdProduct = await Product.findById(isExists.product);
+        console.log(createdProduct);
+      }
+      else {
+        createdProduct = await productController.createProduct(link);
+      }
       const newOrder = new Order({
         gmail: gmail,
         price: price,
@@ -40,7 +48,6 @@ const OrderController = {
       });
 
       const savedOrder = await newOrder.save();
-
       res.status(200).json(savedOrder);
     } catch (err) {
       res.status(500).json(err.message);
