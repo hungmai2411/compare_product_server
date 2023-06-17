@@ -352,6 +352,37 @@ const ProductsController = {
     }
   },
 
+  // [GET] /v1/products/:name/month=:month/year=:year
+  getPricesInMonth: async (req, res) => {
+    try {
+      const productName = req.params.productname;
+      const month = req.params.month;
+      const year = req.params.year;
+
+      const startOfMonth = new Date(year, month - 1, 1);
+      const endOfMonth = new Date(year, month, 1);
+      console.log(startOfMonth);
+      console.log(endOfMonth);
+
+      const product = await Product.findOne({ name: productName }).exec();
+      //const product = await Product.findById(req.params.id);
+      if (!product) {
+        res.status(404).json({ error: 'Product is not found' });
+        return;
+      }
+  
+      const pricesInMonth = product.prices.filter(
+        (price) => {
+          if (price.date >= startOfMonth && price.date <= endOfMonth) {
+            return price;
+          }
+        }
+      );
+      res.status(200).json(pricesInMonth);
+    } catch (err) {
+      res.status(500).json(err.message);
+    }
+  },
   // [PUT] /v1/products/crawltime
   setTimeCrawl: async (req, res) => {
     try {
@@ -361,6 +392,7 @@ const ProductsController = {
       res.status(500).json(err.message);
     }
   },
+
   scheduleCrawl: async (req, res) => {
     try {
       cron.schedule("3 0 * * *", function () {
