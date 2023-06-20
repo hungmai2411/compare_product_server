@@ -1,5 +1,5 @@
 const { Product, Order } = require("../models/product.model");
-const productController = require("./product.controller");
+const ProductsController = require("./product.controller");
 
 const OrderController = {
   // [GET ALL] /v1/order
@@ -33,11 +33,10 @@ const OrderController = {
       let createdProduct = "a";
       if (isExists) {
         // createdProduct = await productController.createProduct(link);
-        createdProduct = await Product.findById(isExists.product);
-        console.log(createdProduct);
+        createdProduct = await ProductsController.updateAProduct(isExists.product);
       }
       else {
-        createdProduct = await productController.createProduct(link);
+        createdProduct = await ProductsController.createProduct(link);
       }
       const newOrder = new Order({
         gmail: gmail,
@@ -46,7 +45,7 @@ const OrderController = {
         product: createdProduct,
         hasDone: false,
       });
-
+      
       const savedOrder = await newOrder.save();
       res.status(200).json(savedOrder);
     } catch (err) {
