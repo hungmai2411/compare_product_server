@@ -189,22 +189,42 @@ const ProductsController = {
       // const product = await Product.findById(req.params.id);
       const product = await Product.findById(id);
       const baseUrl = product.link;
-      let newPrice = {};
-      if (baseUrl.split("/")[2] === "phongvu.vn") {
-        const response = await axios.get(baseUrl);
-        const $ = cheerio.load(response.data);
-        const info = $(".css-6b3ezu");
-        let price = info.find(".att-product-detail-latest-price").text();
-        if (price !== "") {
-          price = price.trim().split("₫")[0].replaceAll(".", "");
-          const date = new Date();
-          newPrice = {
-            date,
-            price: parseInt(price),
-          };
-        } else {
-          price = info
-            .find(".css-1co26wt > div")
+      const currentTime = new Date();
+      //console.log(`currentTime: ${currentTime}`);
+      const latestPriceTime = product.prices[product.prices.length - 1].date;
+      //console.log(`latestPriceTime: ${latestPriceTime}`);
+      if(currentTime - latestPriceTime > 60000) {
+        let newPrice = {};
+        if (baseUrl.split("/")[2] === "phongvu.vn") {
+          const response = await axios.get(baseUrl);
+          const $ = cheerio.load(response.data);
+          const info = $(".css-6b3ezu");
+          let price = info.find(".att-product-detail-latest-price").text();
+          if (price !== "") {
+            price = price.trim().split("₫")[0].replaceAll(".", "");
+            const date = new Date();
+            newPrice = {
+              date,
+              price: parseInt(price),
+            };
+          } else {
+            price = info
+              .find(".css-1co26wt > div")
+              .text()
+              .trim()
+              .split("₫")[0]
+              .replaceAll(".", "");
+            const date = new Date();
+            newPrice = {
+              date,
+              price: parseInt(price),
+            };
+          }
+        }
+        if (baseUrl.split("/")[2] === "gearvn.com") {
+          const response = await axios.get(baseUrl);
+          const $ = cheerio.load(response.data);
+          const price = $(".pro-price")
             .text()
             .trim()
             .split("₫")[0]
@@ -215,69 +235,57 @@ const ProductsController = {
             price: parseInt(price),
           };
         }
-      }
-      if (baseUrl.split("/")[2] === "gearvn.com") {
-        const response = await axios.get(baseUrl);
-        const $ = cheerio.load(response.data);
-        const price = $(".pro-price")
-          .text()
-          .trim()
-          .split("₫")[0]
-          .replaceAll(".", "");
-        const date = new Date();
-        newPrice = {
-          date,
-          price: parseInt(price),
-        };
-      }
-      if (baseUrl.split("/")[2] === "tiki.vn") {
-        const response = await axios.get(baseUrl);
-        const $ = cheerio.load(response.data);
-        let price = $('.product-price > .product-price__current-price')
-          .text()
-          .trim()
-          .split('₫')[0]
-          .replaceAll(".","");
-        if (!price) {
-            //console.log("sale");
-            price = $(".flash-sale-price")
-              .text()
-              .trim()
-              .split('₫')[0]
-              .replaceAll(".","");  
-            if (!price) {
-                //console.log("discount")
-                price = $(".styles__Price-sc-6hj7z9-1.jgbWJA")
-                  .text()
-                  .trim()
-                  .split('₫')[0]
-                  .replaceAll(".","");
+        if (baseUrl.split("/")[2] === "tiki.vn") {
+          const response = await axios.get(baseUrl);
+          const $ = cheerio.load(response.data);
+          let price = $('.product-price > .product-price__current-price')
+            .text()
+            .trim()
+            .split('₫')[0]
+            .replaceAll(".","");
+          if (!price) {
+              //console.log("sale");
+              price = $(".flash-sale-price")
+                .text()
+                .trim()
+                .split('₫')[0]
+                .replaceAll(".","");  
+              if (!price) {
+                  //console.log("discount")
+                  price = $(".styles__Price-sc-6hj7z9-1.jgbWJA")
+                    .text()
+                    .trim()
+                    .split('₫')[0]
+                    .replaceAll(".","");
+              }
             }
-          }
-        const date = new Date();
-        newPrice = {
-          date,
-          price: parseInt(price),
-        };
-      } else if (baseUrl.split("/")[2] === "hoanghamobile.com") {
-        const response = await axios.get(baseUrl);
-        const $ = cheerio.load(response.data);
-        const price = $(".product-center > p > strong")
-          .text()
-          .trim()
-          .split("₫")[0]
-          .replaceAll(",", "");
-        const date = new Date();
-        newPrice = {
-          date,
-          price: parseInt(price),
-        };
-      }
-      if (Object.keys(newPrice).length !== 0) {
-        product.prices.push(newPrice);
-        await product.save();
+          const date = new Date();
+          newPrice = {
+            date,
+            price: parseInt(price),
+          };
+        } else if (baseUrl.split("/")[2] === "hoanghamobile.com") {
+          const response = await axios.get(baseUrl);
+          const $ = cheerio.load(response.data);
+          const price = $(".product-center > p > strong")
+            .text()
+            .trim()
+            .split("₫")[0]
+            .replaceAll(",", "");
+          const date = new Date();
+          newPrice = {
+            date,
+            price: parseInt(price),
+          };
+        }
+        if (Object.keys(newPrice).length !== 0) {
+          product.prices.push(newPrice);
+          await product.save();
+        } else {
+          console.log("empty object");
+        } 
       } else {
-        console.log("empty object");
+        console.log("Product  is updated");
       }
       return product;
     } catch (err) {
